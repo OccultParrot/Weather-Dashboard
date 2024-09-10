@@ -1,5 +1,10 @@
 import { Router } from 'express';
+import fs from 'fs';
 const router = Router();
+
+async function getHistoryData() {
+  
+}
 
 // import HistoryService from '../../service/historyService.js';
 // import WeatherService from '../../service/weatherService.js';
