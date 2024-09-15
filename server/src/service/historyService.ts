@@ -1,6 +1,7 @@
-import fs from 'node:fs/promises';
+import fs from "node:fs/promises";
 import { v4 as uuidv4 } from 'uuid';
 
+// TODO: Define a City class with name and id properties
 class City {
   name: string;
   id: string;
@@ -13,67 +14,47 @@ class City {
 
 // TODO: Complete the HistoryService class
 class HistoryService {
-  private HISTORY_PATH = 'db/searchHistory.json';
-  
+  // TODO: Define a read method that reads from the searchHistory.json file
   private async read() {
-    return await fs.readFile(this.HISTORY_PATH, {
-      flag: 'a+',
-      encoding: 'utf-8'
-    });
+    return await fs.readFile("db/searchHistory.json", "utf-8");
   }
 
+  // TODO: Define a write method that writes the updated cities array to the searchHistory.json file
   private async write(cities: City[]) {
-    return await fs.writeFile(this.HISTORY_PATH, JSON.stringify(cities, null, '\t'));
+    console.log(cities);
+    await fs.writeFile("db/searchHistory.json", JSON.stringify(cities), "utf-8");
   }
 
-  async getCities() {
-    return await this.read().then((cities) => {
-      let parsedCities: City[];
-
-      try {
-        parsedCities = [].concat(JSON.parse(cities));
-      } catch (err) {
-        parsedCities = [];
-      }
-
-      return parsedCities;
-    })
+  // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects
+  async getCities(): Promise<City[]> {
+    const data: string = await this.read();
+    return JSON.parse(data);
   }
+
   // TODO Define an addCity method that adds a city to the searchHistory.json file
   async addCity(city: string) {
-    if (!city) {
-      throw new Error('City cannot be blank!');
-    }
-
-    // TESTING! REMOVE THIS!!
-    console.log("Adding", city, "to history");
-
-    const newCity: City = {
-      name: city,
-      id: uuidv4()
-    };
-
-    const cities = await this.getCities();
-
-    cities.push(newCity);
-
-    this.write(cities);
+    console.log(city)
+    const cities: City[] = await this.getCities();
+    cities.push(new City(city, uuidv4()));
+    this.write(cities)
+    return
   }
+
   // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
   async removeCity(id: string) {
-    if (!id) {
-      throw new Error('ID cannot be blank!');
-    }
-
-    const cities = await this.getCities();
-
-    for (let i = 0; i < cities.length; i++) {
-      if (cities[i].id == id) {
-        cities.splice(i);
-        
-        // We return so that the loop doesnt keep going once we find what we want
-        return;
+    console.log("Attempting to remove", id, "from history.")
+    try {
+      const cities = await this.getCities();
+      for (let i = 0; i < cities.length; i++) {
+        if (cities[i].id == id) {
+          console.log("Found matching ID! Attempting to remove city \"" + cities[i].name + "\".")
+          cities.splice(i);
+          console.log("Sucess!");
+          this.write(cities)
+        }
       }
+    } catch (err) {
+      console.log("Error removeing city with id", id + ":", err)
     }
   }
 }
