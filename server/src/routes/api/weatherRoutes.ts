@@ -3,22 +3,28 @@ import { Router, type Request, type Response } from 'express';
 const router = Router();
 
 import HistoryService from '../../service/historyService.js';
-// import WeatherService from '../../service/weatherService.js';
+import WeatherService from '../../service/weatherService.js';
 
 // TODO: POST Request with city name to retrieve weather data
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   console.log("Weather POST Request from", req.ip);
-  
-  // Get weater data
 
   try {
-    HistoryService.addCity(req.body.cityName);
-    return res.status(200);
+    await HistoryService.addCity(req.body.cityName);
+    const data = await WeatherService.getWeatherForCity(req.body.cityName);
+    
+    if (!data) {
+      throw new Error("Data empty for some reason, idk lol");
+    }
+    
+    console.log(typeof data);
+    console.log(typeof data[0]);
+    
+    return res.status(200).json(data);
   } catch (err) {
-    console.log("Error adding city to history:", err);
-    return res.status(500);
+    console.log("Error processing weather request:", err);
+    return res.status(500).json({ error: `Error occurred: ${err}` });
   }
-  
 });
 
 // TODO: GET search history

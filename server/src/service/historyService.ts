@@ -33,11 +33,24 @@ class HistoryService {
 
   // TODO Define an addCity method that adds a city to the searchHistory.json file
   async addCity(city: string) {
-    console.log(city)
-    const cities: City[] = await this.getCities();
-    cities.push(new City(city, uuidv4()));
-    this.write(cities)
-    return
+    try {
+      let exists = false;
+      console.log("Attempting to add", city, "to history...")
+      const cities: City[] = await this.getCities();
+      cities.forEach(cityItem => {
+      if (city == cityItem.name) {
+        console.log(city, "is already exists");
+        exists = true;
+      }
+      });
+      if (!exists) {
+        console.log("Sucessfully added city to history")
+        cities.push(new City(city, uuidv4()));
+        await this.write(cities)
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // * BONUS TODO: Define a removeCity method that removes a city from the searchHistory.json file
