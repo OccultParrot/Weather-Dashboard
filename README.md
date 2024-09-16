@@ -19,6 +19,8 @@ Use the website to check the forcast for any city!
 To view license, click [here](LICENSE)
 
 ## Usage
+
+[Link to the website](https://weather-dashboard-g6mh.onrender.com/)
             
 Type the city you want to view in the search bar on the left, and then it will tell you the current weather and the weather for the next 5 days. You can also click cities that are in your history and see the weather for them!
 
